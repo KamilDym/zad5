@@ -56,7 +56,7 @@ public class TripController(S25005Context context) : ControllerBase
 
     [HttpPost]
     [Route("{idTrip}/clients")]
-    public async Task<IActionResult> AssingsTripClient(int idTrip,[FromBody] ClientDTO dto )
+    public async Task<IActionResult> AssingsTripClientAsync(int idTrip,[FromBody] ClientDTO dto )
     {
         
         var clientCheck = await context.Clients.CountAsync(c => c.Pesel == dto.pesel);
@@ -69,10 +69,16 @@ public class TripController(S25005Context context) : ControllerBase
                 FirstName = dto.firstName,
                 LastName = dto.lastName,
                 Email = dto.email,
-                Telephone = dto.email,
+                Telephone = dto.telephone,
                 Pesel = dto.pesel
             });
             await context.SaveChangesAsync();
+        }   
+        
+        var tripCheck = await context.Trips.CountAsync(t => t.IdTrip == idTrip);
+        if (tripCheck == 0)
+        {
+            return BadRequest();
         }
 
         var getClientId = context.Clients.Where(c => c.Pesel == dto.pesel).Select(c=> c.IdClient).Single();
@@ -81,14 +87,17 @@ public class TripController(S25005Context context) : ControllerBase
         {
             return BadRequest();
         }
-        
-        
-        
-        
+
+        await context.ClientTrips.AddAsync(new ClientTrip
+        {
+            IdClient = getClientId,
+            IdTrip = idTrip,
+            RegisteredAt = DateTime.Now,
+            PaymentDate = dto.paymentDate
+        });
+        await context.SaveChangesAsync();
         
         return Created();
     }
-    
-    
-    
+
 }

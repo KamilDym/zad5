@@ -1,4 +1,7 @@
-﻿namespace WebApplication2.DTOs;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+namespace WebApplication2.DTOs;
 
 public class ClientDTO
 {
@@ -8,6 +11,5 @@ public class ClientDTO
     public  String telephone { get; set; }
     public  String pesel { get; set; }
     public String tripName { get; set; }
-    
-    public DateTime paymentDate { get; set; }
+    public DateTime? paymentDate { get; set; }
 }
